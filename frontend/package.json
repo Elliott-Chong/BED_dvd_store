@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.13",
     "axios": "^1.2.3",
     "daisyui": "^2.47.0",
     "immer": "^9.0.18",

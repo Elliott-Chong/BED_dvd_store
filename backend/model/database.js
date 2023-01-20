@@ -6,6 +6,7 @@ try {
     user: "bed_dvd_root",
     password: "pa$$woRD123",
     database: "bed_dvd_db",
+    port: "3306",
   });
   console.log("mysql server connected!");
 } catch (error) {

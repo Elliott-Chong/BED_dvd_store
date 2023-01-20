@@ -1,7 +1,9 @@
 import connection from "../model/database.js";
 import util from "util";
 let query = util.promisify(connection.query).bind(connection);
+import cors from "cors";
 import express from "express";
+import authRouter from "../controller/routes/auth.js";
 
 // importing all the model files
 import Actor from "../model/Actor.js";
@@ -9,6 +11,7 @@ import Film from "../model/Film.js";
 import Customer from "../model/Customer.js";
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", async (req, res) => {
@@ -347,6 +350,8 @@ app.post("/rental/:customer_id", async (req, res) => {
     res.status(500).send({ error_msg: "Internal server error" });
   }
 });
+
+app.use("/auth", authRouter);
 
 app.listen(8000, () => {
   console.log("BED CA1 Running on http://localhost:" + 8000);
