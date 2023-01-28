@@ -7,7 +7,7 @@ type Props = {};
 const Login = (props: Props) => {
   const { login } = useGlobalContext();
   const [formData, setFormData] = React.useState({
-    username: "",
+    email: "",
     password: "",
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,19 +16,19 @@ const Login = (props: Props) => {
   return (
     <main className="center-it font-spacemono p-6">
       <div className="mt-2 flex flex-col gap-4 rounded-sm">
-        <h1 className="text-4xl font-bold">Login</h1>
+        <h1 className="text-4xl font-bold">Admin Login</h1>
         <form
           className="flex flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
-            login(formData.username, formData.password);
+            login(formData.email, formData.password);
           }}
         >
           <div className="form-control w-full max-w-xs">
             <input
               type="text"
-              placeholder="Username"
-              name="username"
+              placeholder="Email"
+              name="email"
               className="input input-bordered w-full max-w-xs font-bold shadow-xl"
               onChange={handleChange}
             />
@@ -45,9 +45,8 @@ const Login = (props: Props) => {
           <button className="btn btn-primary shadow-xl">Login!</button>
         </form>
         <span>
-          Don't have an account?{" "}
           <Link to="/register" className="underline">
-            Register
+            Customer login
           </Link>
         </span>
       </div>

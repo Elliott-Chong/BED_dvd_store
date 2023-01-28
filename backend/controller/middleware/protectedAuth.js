@@ -7,8 +7,9 @@ dotenv.config();
 
 const auth = async (req, res, next) => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
+    let token = req.header("Authorization");
     if (token) {
+      token = token.replace("Bearer ", "");
       const payload = await jwt.verify(token, process.env.JWT_SECRET);
       if (payload) {
         const user = await query("SELECT * FROM Users WHERE id=?", [
@@ -22,7 +23,7 @@ const auth = async (req, res, next) => {
       return res.status(403).send("no token");
     }
   } catch (error) {
-    console.log("invalid token");
+    console.log(error);
     res.status(401).send("invalid token");
   }
 };

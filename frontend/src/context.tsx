@@ -5,7 +5,6 @@ import {
   InitialStateInterface,
   reducer,
 } from "./reducer";
-import { AxiosError } from "axios";
 
 import toast from "react-hot-toast";
 import produce from "immer";
@@ -16,7 +15,16 @@ interface AppContextInterface {
   state: InitialStateInterface;
   dispatch(arg0: ActionInterface): void;
   login(username: string, password: string): void;
-  register(username: string, password: string, password2: string): void;
+  register(formData: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    address_line1: string;
+    address_line2: string;
+    district: string;
+    postal_code: number;
+    phone: number;
+  }): void;
   logOut(): void;
   loadUser(): void;
 }
@@ -73,8 +81,8 @@ export const AppContextWrapper: React.FC<{ children: React.ReactNode }> = ({
       dispatch({ type: "SET_LOADING", payload: false });
     }, []);
 
-  const login: AppContextInterface["login"] = async (username, password) => {
-    const body = { username, password };
+  const login: AppContextInterface["login"] = async (email, password) => {
+    const body = { email, password };
     try {
       const response = await axios.post("/auth/login", body);
       localStorage.setItem("token", response.data.token);
@@ -90,15 +98,21 @@ export const AppContextWrapper: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const register: AppContextInterface["register"] = async (
-    username,
-    password,
-    password2
-  ) => {
+  const register: AppContextInterface["register"] = async ({
+    first_name,
+    address_line1,
+    address_line2,
+    last_name,
+    email,
+    district,
+    phone,
+    postal_code,
+  }) => {
     const body = {
-      username,
-      password,
-      confirmPassword: password2,
+      first_name,
+      last_name,
+      address_line1,
+      address_line2,
     };
     try {
       await axios.post("/auth/register", body);

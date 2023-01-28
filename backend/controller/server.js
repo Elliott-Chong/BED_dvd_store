@@ -351,6 +351,92 @@ app.post("/rental/:customer_id", async (req, res) => {
   }
 });
 
+app.get("/api/films", async (req, res) => {
+  let { page, per_page, search, category } = req.query;
+  search = search || "";
+  category = category || "";
+
+  search = "%" + search + "%";
+  category = "%" + category + "%";
+
+  per_page = parseInt(per_page);
+  page = page || 1;
+  try {
+    let films = await query(
+      `SELECT category.name as name, film.title as title, film.film_id as id, film.description as description, \
+      film.rating as rating\
+      FROM film join film_category\
+      on film.film_id = film_category.film_id\
+      join category on film_category.category_id = category.category_id\
+      WHERE LOWER(category.name) LIKE ?\
+      AND LOWER(film.title) LIKE ?\
+      LIMIT ${per_page} OFFSET ?`,
+      [category.toLowerCase(), search.toLowerCase(), (page - 1) * per_page]
+    );
+    res.status(200).json(films);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json([{ msg: "Internal server error" }]);
+  }
+});
+
+app.get("/api/films/:slug", async (req, res) => {
+  let { slug } = req.params;
+  slug = slug.replace(/-/g, " ");
+  let prepared_statment = `SELECT \
+  language.name as language, category.name as category,\
+  rental_duration, rental_rate, length, replacement_cost, special_features,\
+  film.title as title, film.release_year as release_year,\
+  film.film_id as id, film.description as description, \
+  film.rating as rating\
+  FROM film join film_category\
+  on film.film_id = film_category.film_id\
+  join category on film_category.category_id = category.category_id\
+  join language on film.language_id = language.language_id\
+  WHERE film.title = ?`;
+
+  let prepared_statment_actors = `SELECT actor.first_name as first_name, actor.last_name as last_name\
+  FROM film join film_actor\
+  on film.film_id = film_actor.film_id\
+  join actor on film_actor.actor_id = actor.actor_id\
+  WHERE film.title = ?`;
+
+  try {
+    let film = await query(prepared_statment, [slug]);
+    if (film.length === 0) {
+      return res.status(404).json([{ msg: "No film with that title found" }]);
+    }
+
+    let actors = await query(prepared_statment_actors, [slug]);
+    actors = actors.map((actor) => {
+      actor.first_name = actor.first_name.toLowerCase();
+      actor.last_name = actor.last_name.toLowerCase();
+      // capitalize first letter of first and last name
+      actor.first_name =
+        actor.first_name.charAt(0).toUpperCase() + actor.first_name.slice(1);
+      actor.last_name =
+        actor.last_name.charAt(0).toUpperCase() + actor.last_name.slice(1);
+      return actor.first_name + " " + actor.last_name;
+    });
+    film[0].actors = actors;
+
+    res.status(200).json(film[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json([{ msg: "Internal server error" }]);
+  }
+});
+
+app.get("/api/categories", async (req, res) => {
+  try {
+    let categories = await query(`SELECT name FROM category`);
+    res.status(200).json(categories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json([{ msg: "Internal server error" }]);
+  }
+});
+
 app.use("/auth", authRouter);
 
 app.listen(8000, () => {

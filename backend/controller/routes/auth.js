@@ -18,7 +18,7 @@ const registrationSchema = z.object({
 });
 
 const loginSchema = z.object({
-  username: z.string().min(3).max(20),
+  email: z.string().email(),
   password: z.string().min(8).max(20),
 });
 
@@ -80,10 +80,10 @@ router.post("/register", async (req, res) => {
   }
 });
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   const isValid = loginSchema.safeParse({
-    username,
+    email,
     password,
   });
 
@@ -93,18 +93,16 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    const response = await query("SELECT * FROM Users WHERE username=?", [
-      username,
-    ]);
+    const response = await query("SELECT * FROM staff WHERE email=?", [email]);
     if (response.length == 0) {
       return res
         .status(400)
-        .json({ errors: [{ msg: "Invalid username or password!" }] });
+        .json({ errors: [{ msg: "Invalid email or password!" }] });
     }
     if (await bcrypt.compare(password, response[0].password)) {
       const payload = {
         user: {
-          id: response[0].id,
+          id: response[0].staff_id,
         },
       };
       jwt.sign(

@@ -9,7 +9,8 @@ interface InitialStateInterface {
   is_authenticated: boolean;
   user: {
     id: number;
-    username: string;
+    role: "user" | "admin";
+    username: "";
     email?: string;
   };
 }
@@ -22,6 +23,7 @@ const initialState: InitialStateInterface = {
     id: 0,
     username: "",
     email: "",
+    role: "user",
   },
 };
 
