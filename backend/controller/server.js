@@ -9,6 +9,7 @@ import authRouter from "../controller/routes/auth.js";
 import Actor from "../model/Actor.js";
 import Film from "../model/Film.js";
 import Customer from "../model/Customer.js";
+import { triggerAsyncId } from "async_hooks";
 const app = express();
 
 app.use(cors());
@@ -351,10 +352,40 @@ app.post("/rental/:customer_id", async (req, res) => {
   }
 });
 
+app.get("/api/transactions", async (req, res) => {
+  try {
+    const data = new Map();
+    let transaction_data = await query(
+      `SELECT amount, payment_date FROM payment`
+    );
+    for (let i = 0; i < transaction_data.length; i++) {
+      let { amount, payment_date } = transaction_data[i];
+      amount = parseFloat(amount);
+      payment_date = payment_date.toISOString().split("T")[0];
+      if (data.has(payment_date)) {
+        data.set(payment_date, data.get(payment_date) + amount);
+      } else {
+        data.set(payment_date, amount);
+      }
+    }
+    // convert data into an array of objects with the shape {date: "2020-01-01", amount: 100}
+    const result = [];
+    for (let [key, value] of data) {
+      result.push({ date: key, amount: value });
+    }
+    return res.json(result).status(200);
+  } catch (error) {
+    console.error(err);
+    res.status(500).send({ error_msg: "Internal server error" });
+  }
+});
+
 app.get("/api/films", async (req, res) => {
-  let { page, per_page, search, category } = req.query;
+  let { page, per_page, search, category, rental_rate } = req.query;
   search = search || "";
   category = category || "";
+  if (isNaN(rental_rate) || rental_rate === "") rental_rate = 999999;
+  rental_rate = parseFloat(rental_rate);
 
   search = "%" + search + "%";
   category = "%" + category + "%";
@@ -370,8 +401,14 @@ app.get("/api/films", async (req, res) => {
       join category on film_category.category_id = category.category_id\
       WHERE LOWER(category.name) LIKE ?\
       AND LOWER(film.title) LIKE ?\
+      AND film.rental_rate <= ?\
       LIMIT ${per_page} OFFSET ?`,
-      [category.toLowerCase(), search.toLowerCase(), (page - 1) * per_page]
+      [
+        category.toLowerCase(),
+        search.toLowerCase(),
+        rental_rate,
+        (page - 1) * per_page,
+      ]
     );
     res.status(200).json(films);
   } catch (error) {
@@ -421,6 +458,27 @@ app.get("/api/films/:slug", async (req, res) => {
     film[0].actors = actors;
 
     res.status(200).json(film[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json([{ msg: "Internal server error" }]);
+  }
+});
+
+app.get("/api/stores", async (req, res) => {
+  try {
+    let stores = await query(`SELECT store.store_id, address.address FROM store\
+    JOIN address ON store.address_id = address.address_id`);
+    res.status(200).json(stores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json([{ msg: "Internal server error" }]);
+  }
+});
+
+app.get("/api/cities", async (req, res) => {
+  try {
+    let cities = await query(`SELECT city, city_id from city`);
+    res.status(200).json(cities);
   } catch (error) {
     console.error(error);
     res.status(500).json([{ msg: "Internal server error" }]);

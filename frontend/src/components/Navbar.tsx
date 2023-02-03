@@ -12,13 +12,16 @@ const Navbar = (props: Props) => {
   const authenticated_titles = React.useMemo(() => {
     return (
       <div className="flex gap-4 items-center">
-        {state.user?.role === "admin" && (
+        {state.user && (
           <>
             <Link className="btn btn-sm btn-secondary" to="/add/actor">
               Add actor
             </Link>
             <Link className="btn btn-sm btn-secondary" to="/add/customer">
               Add customer
+            </Link>
+            <Link className="btn btn-outline btn-sm" to="/transactions">
+              Transactions
             </Link>
           </>
         )}

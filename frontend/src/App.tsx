@@ -8,6 +8,7 @@ import FilmDetails from "./pages/FilmDetails";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Transactions from "./pages/Transactions";
 function App() {
   const { loadUser, state } = useGlobalContext();
   const { loading, is_authenticated } = state;
@@ -31,6 +32,7 @@ function App() {
       <>
         <Route path="/add/actor" element={<AddActor />} />
         <Route path="/add/customer" element={<AddCustomer />} />
+        <Route path="/transactions" element={<Transactions />} />
         <Route path="*" element={<Navigate to="/" />} />
         {sharedRoutes}
       </>

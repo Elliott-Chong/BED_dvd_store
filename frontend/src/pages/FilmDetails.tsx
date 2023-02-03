@@ -48,7 +48,6 @@ const FilmDetails = (props: Props) => {
   if (isError) {
     return <h1 className="px-12 text-2xl font-bold">Cannot find title</h1>;
   }
-  console.log(film);
 
   if (isLoading) {
     return <Loader />;
@@ -121,7 +120,6 @@ const FilmDetails = (props: Props) => {
       <p>
         Rental rate: <span className="badge">${film.rental_rate}</span>
       </p>
-      <h2 className="text-xl mt-6 font-bold">Reviews</h2>
     </main>
   );
 };

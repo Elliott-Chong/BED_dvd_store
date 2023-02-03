@@ -44,11 +44,6 @@ const Login = (props: Props) => {
           </div>
           <button className="btn btn-primary shadow-xl">Login!</button>
         </form>
-        <span>
-          <Link to="/register" className="underline">
-            Customer login
-          </Link>
-        </span>
       </div>
     </main>
   );

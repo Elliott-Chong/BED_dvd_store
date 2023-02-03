@@ -12,7 +12,7 @@ const auth = async (req, res, next) => {
       token = token.replace("Bearer ", "");
       const payload = await jwt.verify(token, process.env.JWT_SECRET);
       if (payload) {
-        const user = await query("SELECT * FROM Users WHERE id=?", [
+        const user = await query("SELECT * FROM staff WHERE staff_id=?", [
           payload.user.id,
         ]);
         req.user = user[0];
