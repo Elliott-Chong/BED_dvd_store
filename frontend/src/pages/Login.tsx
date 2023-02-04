@@ -44,6 +44,11 @@ const Login = (props: Props) => {
           </div>
           <button className="btn btn-primary shadow-xl">Login!</button>
         </form>
+        <p className="text-gray-400 font-bold ">Credentials:</p>
+        <p className="text-gray-400 font-normal text-sm">
+          Mike.Hillyer@sakilastaff.com
+        </p>
+        <p className="text-gray-400 font-normal text-sm">password123</p>
       </div>
     </main>
   );
