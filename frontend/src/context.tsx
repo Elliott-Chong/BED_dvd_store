@@ -117,7 +117,7 @@ export const AppContextWrapper: React.FC<{ children: React.ReactNode }> = ({
     try {
       await axios.post("/auth/register", body);
 
-      login(username, password);
+      // login(username, password);
     } catch (error) {
       const err = error as any;
       for (let message of err.response?.data?.errors || []) {
