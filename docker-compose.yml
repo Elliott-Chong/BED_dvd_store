@@ -1,32 +1,15 @@
 version: '3.8'
 
 services:
-  database:
-    image: mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: hello 
-      MYSQL_HOST: localhost
-      MYSQL_USER: bed_dvd_root
-      MYSQL_DATABASE: bed_dvd_db
-      MYSQL_PASSWORD: hello
-    volumes:
-      - ./sakila_bed.sql:/sakila_bed.sql
-      - ./mysql:/var/lib/mysql
-    ports:
-      - "3306:3306"
-
   backend:
     build:
       dockerfile: Dockerfile
       context: "./backend"
-    depends_on:
-      - database
     volumes:
       - /app/node_modules
       - ./backend:/app
     ports:
-      - "8000:8000"
+      - "8005:8000"
 
   frontend:
     stdin_open: true

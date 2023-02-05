@@ -6,9 +6,9 @@ let retries = 5;
 while (retries !== 0) {
   try {
     connection = mysql.createConnection({
-      host: "database",
-      user: "bed_dvd_root",
-      password: "hello",
+	    host: "172.17.0.1",
+      user: "docker_user",
+	    password: "password",
       database: "bed_dvd_db",
       port: "3306",
     });
